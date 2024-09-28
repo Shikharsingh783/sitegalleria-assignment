@@ -85,18 +85,23 @@ class _SolarSystemWithPartialRingsState
             builder: (context, child) {
               return Positioned(
                 left: MediaQuery.of(context).size.width * _sunAnimation.value,
-                top: MediaQuery.of(context).size.height / 2 - 135,
+                top: MediaQuery.of(context).size.height / 2 - 85,
                 child: ClipRect(
                   child: Align(
                     alignment: Alignment.centerRight,
                     widthFactor: 0.75, // Show only 75% of the width
                     child: Container(
-                      width: 170,
-                      height: 170,
+                      width: 230,
+                      height: 230,
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.blue,
-                      ),
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                              colors: [
+                                Color2,
+                                Color1,
+                              ],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter)),
                     ),
                   ),
                 ),
@@ -113,7 +118,7 @@ class _SolarSystemWithPartialRingsState
 class PartialRingsPainter extends CustomPainter {
   final double animationValue; // Value for ring animation
   final double sunAnimationValue; // Value for sun position
-  final double sunRadius = 50; // Radius of the sun
+  final double sunRadius = 60; // Radius of the sun
 
   PartialRingsPainter({
     required this.animationValue,
@@ -123,36 +128,40 @@ class PartialRingsPainter extends CustomPainter {
   // Define the properties of each ring
   final List<RingProperties> rings = [
     RingProperties(
-      size: 60,
-      angle: -pi / 4,
-      color: Colors.white.withOpacity(0.5),
-      strokeWidth: 1,
-      lengthFactor: 3.75, // 75% of the ring is visible
-      verticalOffset: -30, // Example offset
-    ),
-    RingProperties(
-      size: 80,
-      angle: -pi / 3,
-      color: Colors.white.withOpacity(0.5),
-      strokeWidth: 1,
-      lengthFactor: 4.0, // Full length of the ring is visible
-      verticalOffset: 0, // Example offset
-    ),
-    RingProperties(
-      size: 200,
-      angle: -pi / 2,
-      color: Colors.white.withOpacity(0.5),
-      strokeWidth: 1,
-      lengthFactor: 3.5, // 50% of the ring is visible
-      verticalOffset: 20, // Example offset
-    ),
-    RingProperties(
       size: 120,
+      angle: -pi / 4,
+      color: Color3,
+      strokeWidth: 0.5,
+      lengthFactor: 3,
+      verticalOffset: 20,
+      horizontalOffset: -40, // Example horizontal offset
+    ),
+    RingProperties(
+      size: 175,
+      angle: -pi / 3,
+      color: Color3,
+      strokeWidth: 0.5,
+      lengthFactor: 4.0,
+      verticalOffset: 30,
+      horizontalOffset: -40, // Example horizontal offset
+    ),
+    RingProperties(
+      size: 240,
       angle: -pi / 8,
-      color: Colors.white.withOpacity(0.5),
-      strokeWidth: 1,
-      lengthFactor: 3.0, // Full length of the ring is visible
-      verticalOffset: 10, // Example offset
+      color: Color3,
+      strokeWidth: 0.5,
+      lengthFactor: 3.0,
+      verticalOffset: 70,
+      horizontalOffset: -45, // Example horizontal offset
+    ),
+    RingProperties(
+      size: 300,
+      angle: -pi / 2,
+      color: Color3,
+      strokeWidth: 0.5,
+      lengthFactor: 3.5,
+      verticalOffset: 15,
+      horizontalOffset: -40, // Example horizontal offset
     ),
   ];
 
@@ -160,7 +169,7 @@ class PartialRingsPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // Calculate the sun's position based on the animation value
     double sunLeftPosition = size.width * sunAnimationValue;
-    Offset sunCenter = Offset(sunLeftPosition + sunRadius, size.height / 2);
+    Offset sunCenter = Offset(sunLeftPosition + sunRadius, size.height / 2.1);
 
     // Draw each ring with custom properties
     for (RingProperties ring in rings) {
@@ -168,8 +177,10 @@ class PartialRingsPainter extends CustomPainter {
           (sunRadius + ring.size) * animationValue; // Expanding radius
       double sweepAngle = pi * 0.75 * ring.lengthFactor; // Adjustable length
       Rect arcRect = Rect.fromCircle(
-        center: Offset(sunCenter.dx,
-            sunCenter.dy + ring.verticalOffset), // Apply vertical offset
+        center: Offset(
+            sunCenter.dx + ring.horizontalOffset,
+            sunCenter.dy +
+                ring.verticalOffset), // Apply vertical and horizontal offset
         radius: ringRadius,
       );
 
@@ -199,6 +210,7 @@ class RingProperties {
   final double strokeWidth; // Width of the ring stroke
   final double lengthFactor; // Fraction of the ring length to display
   final double verticalOffset; // Vertical offset for positioning the ring
+  final double horizontalOffset; // Horizontal offset for positioning the ring
 
   RingProperties({
     required this.size,
@@ -206,6 +218,7 @@ class RingProperties {
     required this.color,
     required this.strokeWidth,
     required this.lengthFactor,
-    required this.verticalOffset, // New parameter for vertical positioning
+    required this.verticalOffset, // Existing parameter
+    required this.horizontalOffset, // New parameter for horizontal positioning
   });
 }
