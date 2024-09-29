@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sitegalleria/components/my_Textfeild.dart';
+import 'package:sitegalleria/components/my_service_tile.dart';
 import 'package:sitegalleria/components/my_tab_bar.dart';
 import 'package:sitegalleria/const.dart';
 import 'package:sitegalleria/models/data.dart';
@@ -19,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen>
   late ScrollController scrollController;
 
   // Heights for each section
-  final double sectionHeight = 400.0;
+  final double sectionHeight = 420.0;
 
   @override
   void initState() {
@@ -40,10 +41,10 @@ class _HomeScreenState extends State<HomeScreen>
 
   // Scroll to the respective section
   void scrollToSection(int index) {
-    final targetOffset = index * sectionHeight;
+    final targetOffset = index * sectionHeight * 1.25;
     scrollController.animateTo(
       targetOffset,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 700),
       curve: Curves.easeInOut,
     );
   }
@@ -61,68 +62,38 @@ class _HomeScreenState extends State<HomeScreen>
           filterServiceByCategory(category, services);
 
       // Each category section with its services in a horizontal ListView
-      return Container(
-        height: sectionHeight,
-        padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              category.toString().split('.').last.toUpperCase(),
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+      return Padding(
+        padding: const EdgeInsets.only(
+            bottom:
+                30.0), // Added bottom padding to create space between sections
+        child: Container(
+          height: sectionHeight * 1.18,
+          padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                category.toString().split('.').last.toUpperCase(),
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.5),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: serviceList.length,
-                itemBuilder: (context, index) {
-                  final service = serviceList[index];
-                  return Container(
-                    margin: const EdgeInsets.only(right: 16.0),
-                    width: 200, // Define width for each service card
-                    decoration: BoxDecoration(
-                      color: Colors.grey[850],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            service.title,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 16),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            "\$${service.price}",
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            "Rating: ${service.rating}",
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+              const SizedBox(
+                  height: 20), // Space between heading and service tiles
+              Expanded(
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: serviceList.length,
+                  itemBuilder: (context, index) {
+                    final service = serviceList[index];
+                    return MyServiceTile(service: service);
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }).toList();
@@ -142,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(
-                height: 30,
+                height: 10,
               ),
               //row 1
               Padding(
@@ -200,16 +171,16 @@ class _HomeScreenState extends State<HomeScreen>
                       fontWeight: FontWeight.w500),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
               // Search field
               const MyTextfeild(),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
               // Tab Bar
               MyTabBar(tabController: tabController),
 
               const SizedBox(
-                height: 30,
+                height: 20,
               ),
 
               // ListView with ScrollController for vertical scrolling
