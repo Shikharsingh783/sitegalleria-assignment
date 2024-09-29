@@ -8,7 +8,7 @@ class PurchaseButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 53,
-      width: 175,
+      width: 170,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         gradient: LinearGradient(

@@ -9,6 +9,7 @@ class MyTextfeild extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: TextField(
+        style: const TextStyle(color: Colors.white),
         cursorColor: Colors.white70,
         decoration: InputDecoration(
             hintText: 'Search Marriage, carrer etc',

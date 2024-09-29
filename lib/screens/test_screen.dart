@@ -131,86 +131,184 @@ class PartialRingsPainter extends CustomPainter {
       size: 120,
       angle: -pi / 4,
       color: Color3,
-      strokeWidth: 0.5,
-      lengthFactor: 3,
+      strokeWidth: 1.0,
+      lengthFactor: 1.0,
       verticalOffset: 20,
-      horizontalOffset: -40, // Example horizontal offset
+      horizontalOffset: -40,
     ),
     RingProperties(
       size: 175,
       angle: -pi / 3,
       color: Color3,
-      strokeWidth: 0.5,
-      lengthFactor: 4.0,
+      strokeWidth: 2.0,
+      lengthFactor: 1.0,
       verticalOffset: 30,
-      horizontalOffset: -40, // Example horizontal offset
+      horizontalOffset: -40,
     ),
     RingProperties(
       size: 240,
       angle: -pi / 8,
       color: Color3,
-      strokeWidth: 0.5,
-      lengthFactor: 3.0,
+      strokeWidth: 1.0,
+      lengthFactor: 1.0,
       verticalOffset: 70,
-      horizontalOffset: -45, // Example horizontal offset
+      horizontalOffset: -45,
     ),
     RingProperties(
       size: 300,
       angle: -pi / 2,
       color: Color3,
-      strokeWidth: 0.5,
-      lengthFactor: 3.5,
+      strokeWidth: 1.0,
+      lengthFactor: 1.0,
       verticalOffset: 15,
-      horizontalOffset: -40, // Example horizontal offset
+      horizontalOffset: -40,
+    ),
+  ];
+
+  // Define the properties of each container
+  final List<ContainerProperties> containers = [
+    ContainerProperties(
+      size: 70,
+      color: const Color.fromRGBO(61, 63, 109, 0.6),
+      text: '1',
+    ),
+    ContainerProperties(
+      size: 70,
+      color: const Color.fromRGBO(61, 63, 109, 0.6),
+      text: '2',
+    ),
+    ContainerProperties(
+      size: 70,
+      color: const Color.fromRGBO(61, 63, 109, 0.6),
+      text: '3',
+    ),
+    ContainerProperties(
+      size: 70,
+      color: const Color.fromRGBO(61, 63, 109, 0.6),
+      text: '4',
+    ),
+    ContainerProperties(
+      size: 60,
+      color: Colors.white,
+      text: '5',
+    ),
+    ContainerProperties(
+      size: 60,
+      color: Colors.white,
+      text: '6',
+    ),
+    ContainerProperties(
+      size: 60,
+      color: Colors.white,
+      text: '7',
+    ),
+    ContainerProperties(
+      size: 60,
+      color: Color4,
+      text: '8',
     ),
   ];
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Calculate the sun's position based on the animation value
     double sunLeftPosition = size.width * sunAnimationValue;
     Offset sunCenter = Offset(sunLeftPosition + sunRadius, size.height / 2.1);
 
-    // Draw each ring with custom properties
-    for (RingProperties ring in rings) {
-      double ringRadius =
-          (sunRadius + ring.size) * animationValue; // Expanding radius
-      double sweepAngle = pi * 0.75 * ring.lengthFactor; // Adjustable length
+    for (int i = 0; i < rings.length; i++) {
+      RingProperties ring = rings[i];
+      double ringRadius = (sunRadius + ring.size) * animationValue;
+      double sweepAngle =
+          pi * 2 * ring.lengthFactor; // Ensure this is wide enough
       Rect arcRect = Rect.fromCircle(
         center: Offset(
-            sunCenter.dx + ring.horizontalOffset,
-            sunCenter.dy +
-                ring.verticalOffset), // Apply vertical and horizontal offset
+          sunCenter.dx + ring.horizontalOffset,
+          sunCenter.dy + ring.verticalOffset,
+        ),
         radius: ringRadius,
       );
 
-      // Create a paint object for each ring
       Paint ringPaint = Paint()
         ..color = ring.color
         ..style = PaintingStyle.stroke
         ..strokeWidth = ring.strokeWidth;
 
-      // Draw the arc for the ring
       canvas.drawArc(arcRect, ring.angle, sweepAngle, false, ringPaint);
+
+      // Place circular containers along the second ring (index 1)
+      if (i == 1) {
+        const int containerCount = 8; // Container count
+        double angleStep = sweepAngle / containerCount; // Distribute evenly
+        double containerRadius =
+            ringRadius; // Set container radius based on ring size
+
+        for (int j = 0; j < containerCount; j++) {
+          double angle =
+              ring.angle + angleStep * j; // Calculate angle for each container
+
+          // Calculate the position of each container
+          double x = sunCenter.dx +
+              ring.horizontalOffset +
+              containerRadius * cos(angle);
+          double y =
+              sunCenter.dy + ring.verticalOffset + containerRadius * sin(angle);
+
+          // Draw a circular container at the calculated position
+          canvas.drawCircle(
+            Offset(x, y),
+            containers[j].size / 2,
+            Paint()..color = containers[j].color,
+          );
+
+          // Add the text inside the containers
+          TextSpan textSpan = TextSpan(
+            text: containers[j].text,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          );
+
+          TextPainter textPainter = TextPainter(
+            text: textSpan,
+            textAlign: TextAlign.center,
+            textDirection: TextDirection.ltr,
+          );
+
+          textPainter.layout(
+            minWidth: 0,
+            maxWidth: containers[j].size,
+          );
+
+          // Center the text inside the circular container
+          textPainter.paint(
+            canvas,
+            Offset(
+              x - textPainter.width / 2,
+              y - textPainter.height / 2,
+            ),
+          );
+        }
+      }
     }
   }
 
   @override
-  bool shouldRepaint(PartialRingsPainter oldDelegate) {
+  bool shouldRepaint(covariant PartialRingsPainter oldDelegate) {
     return oldDelegate.animationValue != animationValue ||
         oldDelegate.sunAnimationValue != sunAnimationValue;
   }
 }
 
-// Class for defining ring properties
+// Define the properties for each ring
 class RingProperties {
-  final double size; // Radius of the ring
-  final double angle; // Starting angle of the ring
-  final Color color; // Color of the ring
-  final double strokeWidth; // Width of the ring stroke
-  final double lengthFactor; // Fraction of the ring length to display
-  final double verticalOffset; // Vertical offset for positioning the ring
-  final double horizontalOffset; // Horizontal offset for positioning the ring
+  final double size;
+  final double angle;
+  final Color color;
+  final double strokeWidth;
+  final double lengthFactor; // Length of the ring (0.0 to 1.0)
+  final double verticalOffset; // Vertical offset for positioning
+  final double horizontalOffset; // Horizontal offset for positioning
 
   RingProperties({
     required this.size,
@@ -218,7 +316,20 @@ class RingProperties {
     required this.color,
     required this.strokeWidth,
     required this.lengthFactor,
-    required this.verticalOffset, // Existing parameter
-    required this.horizontalOffset, // New parameter for horizontal positioning
+    required this.verticalOffset,
+    required this.horizontalOffset,
+  });
+}
+
+// Define the properties for each circular container
+class ContainerProperties {
+  final double size;
+  final Color color;
+  final String text; // Add text to the container
+
+  ContainerProperties({
+    required this.size,
+    required this.color,
+    required this.text,
   });
 }
